@@ -54,4 +54,4 @@ const PaymentScreen = () => {
   )
 }
 
-export default PaymentScreen
+export default PaymentScreen;
