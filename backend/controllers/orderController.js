@@ -49,7 +49,7 @@ const getMyOrders = asyncHandler(async (req,res) => {
 // @route GET /orders/:id
 // @access Private
 const getOrderById = asyncHandler(async (req,res) => {
-    const order = await Order.findById(req.params.id).populate('Users','name email');
+    const order = await Order.findById(req.params.id).populate('user','name email');
     if (order) {
        res.status(200).json(order); 
     } else {
