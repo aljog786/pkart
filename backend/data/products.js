@@ -70,6 +70,30 @@ const products = [
     countInStock: 0,
     rating: 4,
     numReviews: 12,
+  },
+  {
+    name: 'Denim Shirt Pure Cotton',
+    image: '/images/shirt.jpg',
+    description:
+      'Blue solid opaque Casual shirt ,has a spread collar, button placket, 2 pocket, long regular sleeves, curved hem',
+    brand: 'XYZ',
+    category: 'Clothing',
+    price: 3500,
+    countInStock: 4,
+    rating: 3.5,
+    numReviews: 3,
+  },
+  {
+    name: 'Denim Cargos Pure Cotton',
+    image: '/images/cargo.jpg',
+    description:
+      'Cargo jeans in cotton denim with a slight stretch for good comfort. Straight leg and a slim fit from the waist through the thigh to the hem. Regular waist and a zip fly, side pockets, coin pocket, back pockets and flap leg pockets.',
+    brand: 'XYZ',
+    category: 'Clothing',
+    price: 3500,
+    countInStock: 4,
+    rating: 4.2,
+    numReviews: 5,
   }
 ]
 
