@@ -1,16 +1,32 @@
 import { LinkContainer } from 'react-router-bootstrap';
 import { Row,Col,Table,Button } from 'react-bootstrap';
-import { FaTimes,FaEdit,FaTrash } from 'react-icons/fa';
-import { useGetProductsQuery } from '../slices/productsApiSlice';
+import { FaEdit,FaTrash } from 'react-icons/fa';
+import { useGetProductsQuery,useCreateProductMutation } from '../slices/productsApiSlice';
+import { toast } from 'react-toastify';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
 
 const ProductListScreen = () => {
 
-    const { data: products,isLoading,error } = useGetProductsQuery();
+    const { data: products,refetch,isLoading,error } = useGetProductsQuery();
+
+    const [ createProduct,{ isLoading: loadingCreate }] = useCreateProductMutation();
 
     const deleteHandler = (id) => {
         console.log('delete',id);
+    }
+    
+    const createProductHandler = async (id) => {
+        if (window.confirm('r u sure ?')) {
+            try {
+                await createProduct();
+                refetch();
+            } catch (err) {
+                toast.error(err?.data?.message || err.error);
+            }
+        } else {
+            
+        }
     }
 
   return (
@@ -20,11 +36,12 @@ const ProductListScreen = () => {
                 <h1>Products</h1>
             </Col>
             <Col className='text-end'>
-                <Button className='btn-sm m-3'>
+                <Button className='btn-sm m-3' onClick={createProductHandler} >
                     <FaEdit/>Create Product
                 </Button>
             </Col>
         </Row>
+        { loadingCreate && <Loader/> }
         { isLoading ? (
             <Loader/>
         ) : error ? (
@@ -47,7 +64,7 @@ const ProductListScreen = () => {
                             <tr key={product._id}>
                                 <td>{product._id}</td>
                                 <td>{product.name}</td>
-                                <td>{product.price}</td>
+                                <td>₹{product.price}</td>
                                 <td>{product.category}</td>
                                 <td>{product.brand}</td>
                                 <td>

@@ -6,7 +6,7 @@ import Product from '../models/productModel.js';
 // @access Public
 const getProducts = asyncHandler(async (req,res) => {
     const products = await Product.find({});
-    res.json(products)
+    res.json(products);
 })
 
 // @disc  fetch a product
@@ -23,4 +23,23 @@ const getProductById = asyncHandler(async (req,res) => {
     }
 })
 
-export {getProducts,getProductById};
+// @disc  create a product
+// @route POST /products
+// @access Private/Admin
+const createProduct = asyncHandler(async (req,res) => {
+    const product = new Product({
+        name: 'Sample name',
+        price: 0.00,
+        user: req.user._id,
+        image: '/images/sample.jpg',
+        brand: 'Sample brand',
+        category: 'Sample category',
+        countInStock: 0,
+        numReviews: 0,
+        description: 'description'
+    })
+    const createdProduct = await product.save();
+    res.status(201).json(createdProduct);
+})
+
+export {getProducts,getProductById,createProduct};
