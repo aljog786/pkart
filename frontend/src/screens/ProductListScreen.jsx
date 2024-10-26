@@ -1,7 +1,7 @@
 import { LinkContainer } from 'react-router-bootstrap';
 import { Row,Col,Table,Button } from 'react-bootstrap';
 import { FaEdit,FaTrash } from 'react-icons/fa';
-import { useGetProductsQuery,useCreateProductMutation } from '../slices/productsApiSlice';
+import { useGetProductsQuery,useCreateProductMutation,useDeleteProductMutation } from '../slices/productsApiSlice';
 import { toast } from 'react-toastify';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
@@ -12,21 +12,29 @@ const ProductListScreen = () => {
 
     const [ createProduct,{ isLoading: loadingCreate }] = useCreateProductMutation();
 
-    const deleteHandler = (id) => {
-        console.log('delete',id);
+    const [ deleteProduct,{ isLoading: loadingDelete } ] = useDeleteProductMutation();
+
+    const deleteHandler = async (id) => {
+        if (window.confirm('r u sure ?')) {
+            try {
+                await deleteProduct(id);
+                toast.success('Product deleted');
+                refetch();
+            } catch (err) {
+                toast.error(err?.data?.message || err.error);
+            }
     }
+}
     
     const createProductHandler = async (id) => {
-        if (window.confirm('r u sure ?')) {
+        if (window.confirm('do you want to create ?')) {
             try {
                 await createProduct();
                 refetch();
             } catch (err) {
                 toast.error(err?.data?.message || err.error);
             }
-        } else {
-            
-        }
+        } 
     }
 
   return (
@@ -41,7 +49,10 @@ const ProductListScreen = () => {
                 </Button>
             </Col>
         </Row>
+
         { loadingCreate && <Loader/> }
+        { loadingDelete && <Loader/> }
+
         { isLoading ? (
             <Loader/>
         ) : error ? (
@@ -77,8 +88,6 @@ const ProductListScreen = () => {
                                         <FaTrash style={{color:'white'}}/>
                                     </Button>
                                 </td>
-
-
                             </tr>
                         ))}
                     </tbody>
