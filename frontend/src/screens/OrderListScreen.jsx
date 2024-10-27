@@ -9,8 +9,6 @@ const OrderListScreen = () => {
 
   const { data:orders,isLoading,error } = useGetAllOrdersQuery();
 
-  console.log(orders)
-
   return (
     <>
       <h1>Orders</h1>

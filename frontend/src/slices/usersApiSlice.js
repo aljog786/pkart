@@ -29,12 +29,19 @@ export const usersApiSlice = apiSlice.injectEndpoints({
                 method: 'PUT',
                 body: data
             })
+        }),
+        getAllUsers: builder.query({
+            query: () => ({
+                url: `${USERS_URL}`
+            }),
+            providesTags: ['Users'],
+            keepUnusedDataFor: 5
         })
         })
     })
 
 
-export const { useLoginMutation,useRegisterMutation,useLogoutMutation,useProfileMutation } = usersApiSlice;
+export const { useLoginMutation,useRegisterMutation,useLogoutMutation,useProfileMutation,useGetAllUsersQuery } = usersApiSlice;
 
 
 // pkart\frontend\src\slices\usersApiSlice.js
