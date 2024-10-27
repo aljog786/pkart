@@ -28,15 +28,15 @@ const getProductById = asyncHandler(async (req,res) => {
 // @access Private/Admin
 const createProduct = asyncHandler(async (req,res) => {
     const product = new Product({
-        name: 'Sample name',
-        price: 0.00,
+        name: 'Pixel 9 Pro 5G 256GB',
+        price: 99000.00,
         user: req.user._id,
         image: '/images/sample.jpg',
-        brand: 'Sample brand',
-        category: 'Sample category',
-        countInStock: 0,
-        numReviews: 0,
-        description: 'description'
+        brand: 'Google',
+        category: 'Smartphone',
+        countInStock: 10,
+        numReviews: 10,
+        description: 'Google Tensor G4,Titan M2 security coprocessor,16 GB RAM,256 GB,Typical 4700mAh(Minimum 4558mAh),Super Actua display(LTPO),6.3-inch(161 mm),152.8 mm(h) x 72 mm(w) x 8.5 mm(d),199g.'
     })
     const createdProduct = await product.save();
     res.status(201).json(createdProduct);
@@ -84,8 +84,44 @@ const deleteProduct = asyncHandler(async (req,res) => {
     }
 })
 
+// @disc  create a review
+// @route POST /products/:id/reviews
+// @access Private
+const createProductReview = asyncHandler(async (req,res) => {
+
+    const { rating,comment } = req.body;
+
+    const product = await Product.findById(req.params.id)
+
+    if (product) {
+       const alreadyReviewed = product.reviews.find(
+        (review) => review.user.toString() === req.user._id.toString()
+       );
+
+       if (alreadyReviewed) {
+        res.status(400);
+        throw new Error('Product already reviewed')
+       }
+       const review = {
+        name: req.user.name,
+        rating: Number(rating),
+        comment,
+        user: req.user._id
+       }
+       product.reviews.push(review);
+       product.numReviews = product.reviews.length;
+       product.rating = product.reviews.reduce((acc,review) => acc + review.rating,0)/product.reviews.length;
+       await product.save();
+       res.status(201).json({message: 'Review added'});
+    } else {
+       res.status(404);
+       throw new Error('Resource not found');
+    }
+})
+
 export { getProducts,
         getProductById,
         createProduct,
         updateProduct,
-        deleteProduct };
+        deleteProduct,
+        createProductReview };

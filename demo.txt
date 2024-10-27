@@ -4,7 +4,7 @@ name: 'Pixel 9 Pro 5G 256GB',
       'Google Tensor G4,Titan M2 security coprocessor,16 GB RAM,256 GB,Typical 4700mAh(Minimum 4558mAh),Super Actua display(LTPO),6.3-inch(161 mm),152.8 mm(h) x 72 mm(w) x 8.5 mm(d),199g.',
     brand: 'Google',
     category: 'Smartphone',
-    price: 3500,
+    price: 99000,
     countInStock: 4,
     rating: 4.5,
     numReviews: 8
