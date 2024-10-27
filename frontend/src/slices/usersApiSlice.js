@@ -36,12 +36,18 @@ export const usersApiSlice = apiSlice.injectEndpoints({
             }),
             providesTags: ['Users'],
             keepUnusedDataFor: 5
+        }),
+        deleteUser: builder.mutation({
+            query: (userId) => ({
+                url: `${USERS_URL}/${userId}`,
+                method: 'DELETE'
+            })
         })
         })
     })
 
 
-export const { useLoginMutation,useRegisterMutation,useLogoutMutation,useProfileMutation,useGetAllUsersQuery } = usersApiSlice;
+export const { useLoginMutation,useRegisterMutation,useLogoutMutation,useProfileMutation,useGetAllUsersQuery,useDeleteUserMutation } = usersApiSlice;
 
 
 // pkart\frontend\src\slices\usersApiSlice.js
