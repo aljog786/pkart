@@ -5,7 +5,7 @@ import Product from '../models/productModel.js';
 // @route GET /products
 // @access Public
 const getProducts = asyncHandler(async (req,res) => {
-    const pageSize = 2;
+    const pageSize = 3;
     const page = Number(req.query.pageNumber) || 1;
     const count = await Product.countDocuments();
     const products = await Product.find({})
@@ -33,15 +33,15 @@ const getProductById = asyncHandler(async (req,res) => {
 // @access Private/Admin
 const createProduct = asyncHandler(async (req,res) => {
     const product = new Product({
-        name: 'Pixel 9 Pro 5G 256GB',
-        price: 99000.00,
+        name: 'M2/02 dark grey and rose gold',
+        price: 150000.00,
         user: req.user._id,
         image: '/images/sample.jpg',
-        brand: 'Google',
-        category: 'Smartphone',
-        countInStock: 10,
-        numReviews: 10,
-        description: 'Google Tensor G4,Titan M2 security coprocessor,16 GB RAM,256 GB,Typical 4700mAh(Minimum 4558mAh),Super Actua display(LTPO),6.3-inch(161 mm),152.8 mm(h) x 72 mm(w) x 8.5 mm(d),199g.'
+        brand: 'Sevenfriday',
+        category: 'Watch',
+        countInStock: 5,
+        numReviews: 7,
+        description: 'The M2/02 takes inspirations from copper pipes, a quintessential mechanical element during the industrial revolution. Featuring a stainless steel box with rose gold PVD treatment and a polished rose gold PVD identification plate, the M2/02 has a dark grey mirror PVD treated bezel with rose gold highlights.'
     })
     const createdProduct = await product.save();
     res.status(201).json(createdProduct);
