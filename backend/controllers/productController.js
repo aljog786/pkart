@@ -34,21 +34,23 @@ const getProductById = asyncHandler(async (req,res) => {
 // @disc  create a product
 // @route POST /products
 // @access Private/Admin
-const createProduct = asyncHandler(async (req,res) => {
+const createProduct = asyncHandler(async (req, res) => {
+    const { name, price, description, image, brand, category, countInStock } = req.body;
+
     const product = new Product({
-        name: 'M2/02 dark grey and rose gold',
-        price: 150000.00,
-        user: req.user._id,
-        image: '/images/sample.jpg',
-        brand: 'Sevenfriday',
-        category: 'Watch',
-        countInStock: 5,
-        numReviews: 7,
-        description: 'The M2/02 takes inspirations from copper pipes, a quintessential mechanical element during the industrial revolution. Featuring a stainless steel box with rose gold PVD treatment and a polished rose gold PVD identification plate, the M2/02 has a dark grey mirror PVD treated bezel with rose gold highlights.'
-    })
+        user: req.user._id, // Assuming req.user is populated with the authenticated user
+        name,
+        price,
+        description,
+        image,
+        brand,
+        category,
+        countInStock,
+    });
+
     const createdProduct = await product.save();
     res.status(201).json(createdProduct);
-})
+});
 
 // @disc  update a product
 // @route PUT /products/:id

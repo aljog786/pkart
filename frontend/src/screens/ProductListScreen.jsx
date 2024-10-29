@@ -48,9 +48,11 @@ const ProductListScreen = () => {
                 <h1>Products</h1>
             </Col>
             <Col className='text-end'>
-                <Button className='btn-sm m-3' onClick={createProductHandler} >
-                    <FaEdit/>Create Product
-                </Button>
+            <LinkContainer to={`/admin/product/addproduct`}>
+        <Button className='btn-sm mx-2' variant='light'>
+            <FaEdit/> Create Product
+        </Button>
+    </LinkContainer>
             </Col>
         </Row>
 
