@@ -1,321 +1,107 @@
-// pkart\frontend\src\components\Meta.jsx
+// pkart\package.json
 
-import { Helmet } from "react-helmet-async";
-
-const Meta = ({title,description,keywords}) => {
-  return (
-    <Helmet>
-        <title>{title}</title>
-        <Meta name={description} content={description}/>
-        <Meta name={keywords} content={keywords}/>
-    </Helmet>
-  )
+{
+  "name": "pkart",
+  "version": "1.0.0",
+  "description": "ecommerce using MERN",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "server": "nodemon backend/server.js",
+    "client": "npm start --prefix frontend",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "data:import": "node backend/seeder.js",
+    "data:destroy": "node backend/seeder.js -d",
+    "build": "npm install && npm install --prefix frontend && npm run build --prefix frontend"
+  },
+  "author": "aljo george",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "colors": "^1.4.0",
+    "cookie-parser": "^1.4.7",
+    "express": "^4.21.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.7.1",
+    "multer": "^1.4.5-lts.1"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1",
+    "dotenv": "^16.4.5",
+    "nodemon": "^3.1.7"
+  }
 }
 
-Meta.defaultProps = {
-    title: 'Welcome to pkart',
-    description: 'We sell the best electronics.',
-    keywords: 'buy electronics,cheap electronics,best electronics'
-};
+// pkart\frontend\package.json
 
-export default Meta
-
-// pkart\frontend\src\index.js
-
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import {
-  createBrowserRouter,
-  createRoutesFromElements,
-  Route,
-  RouterProvider
-
-} from 'react-router-dom';
-import { PayPalScriptProvider } from '@paypal/react-paypal-js';
-import { HelmetProvider } from 'react-helmet-async';
-import { Provider } from 'react-redux';
-import store from './store';
-import './assets/styles/bootstrap.custom.css';
-import './assets/styles/index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import PrivateRoute from './components/PrivateRoute';
-import HomeScreen from './screens/HomeScreen';
-import ProductScreen from './screens/ProductScreen';
-import CartScreen from './screens/CartScreen';
-import LoginScreen from './screens/LoginScreen';
-import RegisterScreen from './screens/RegisterScreen';
-import ShippingScreen from './screens/ShippingScreen';
-import PaymentScreen from './screens/PaymentScreen';
-import PlaceOrderScreen from './screens/PlaceOrderScreen';
-import OrderScreen from './screens/OrderScreen';
-import ProfileScreen from './screens/ProfileScreen';
-import AdminRoute from './components/AdminRoute';
-import OrderListScreen from './screens/OrderListScreen';
-import ProductListScreen from './screens/ProductListScreen';
-import UserListScreen from './screens/UserListScreen';
-import ProductEditScreen from './screens/ProductEditScreen';
-import UserEditScreen from './screens/UserEditScreen';
-
-const router = createBrowserRouter(
-  createRoutesFromElements(
-    <Route path='/' element={<App />}>
-      <Route index={true} path='/' element={<HomeScreen/>} />
-      <Route  path='/search/:keyword' element={<HomeScreen/>} />
-      <Route  path='/page/:pageNumber' element={<HomeScreen/>} />
-      <Route  path='/search/:keyword/page/:pageNumber' element={<HomeScreen/>} />
-      <Route  path='/product/:id' element={<ProductScreen/>} />
-      <Route  path='/cart' element={<CartScreen/>} />
-      <Route path='/login' element={<LoginScreen />}/>
-      <Route path='/register' element={<RegisterScreen/>}/>
-
-      <Route path='' element={<PrivateRoute/>}>
-      <Route path='/shipping' element={<ShippingScreen/>}/>
-      <Route path='/payment' element={<PaymentScreen/>}/>
-      <Route path='/placeorder' element={<PlaceOrderScreen/>}/>
-      <Route path='/order/:id' element={<OrderScreen/>}/>
-      <Route path='/profile' element={<ProfileScreen/>}/>
-      </Route>
-
-      <Route path='' element={<AdminRoute/>}>
-      <Route path='/admin/orderlist' element={<OrderListScreen/>}/>
-      <Route path='/admin/productlist' element={<ProductListScreen/>}/>
-      <Route path='/admin/productlist/:pageNumber' element={<ProductListScreen/>}/>
-      <Route path='/admin/product/:id/edit' element={<ProductEditScreen/>}/>
-      <Route path='/admin/userlist' element={<UserListScreen/>}/>
-      <Route path='/admin/user/:id/edit' element={<UserEditScreen/>}/>
-      </Route>
-
-    </Route>
-  )
-)
-
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <HelmetProvider>
-    <Provider store={store}>
-      <PayPalScriptProvider deferLoading={true}>
-        <RouterProvider router={router} />
-      </PayPalScriptProvider>
-    </Provider>
-    </HelmetProvider>
-  </React.StrictMode>
-);
-
-reportWebVitals();
-
-// pkart\frontend\src\screens\ProductScreen.jsx
-
-import { useState } from "react";
-import { useParams,useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
-import { Form,Row,Col,Image,ListGroup,Card,Button } from "react-bootstrap";
-import { useDispatch,useSelector } from "react-redux";
-import { useGetProductDetailsQuery,useCreateReviewMutation } from "../slices/productsApiSlice";
-import { addToCart } from "../slices/cartSlice";
-import { toast } from 'react-toastify';
-import Meta from "../components/Meta";
-import Rating from "../components/Rating";
-import Loader from "../components/Loader";
-import Message from "../components/Message";
-
-
-const ProductScreen = () => {
-    const {id:productId} = useParams();
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
-    const [qty,setQty] = useState(1);
-    const [rating,setRating] = useState(0);
-    const [comment,setComment] = useState('');
-
-
-
-    const { data:product,isLoading,refetch,error } = useGetProductDetailsQuery(productId);
-    const [ createReview,{isLoading: loadingProductReview}] = useCreateReviewMutation();
-
-    const { userInfo } = useSelector((state) => state.auth);
-
-    const addToCartHandler = () => {
-        dispatch(addToCart({ ...product,qty}));
-        navigate('/cart');
-    }
-    const submitHandler = async (e) => {
-        e.preventDefault();
-        try {
-            await createReview({
-                productId,
-                rating,
-                comment
-            }).unwrap();
-            refetch();
-            toast.success('Review Submitted');
-            setRating(0);
-            setComment('');
-        } catch (err) {
-            toast.error(err?.data?.message || err.error);
-            
-        }
-    }
-
-  return (
-    <>
-    <Link className="btn btn-light my-3" to='/'>
-        back
-    </Link>
-    { isLoading ? (
-        <Loader />
-    ) : error ? (
-        <Message variant='danger'>{error?.data?.message || error.error}</Message>
-    ) : (
-        <>
-        <Meta title={product.name}/>
-            <Row>
-            <Col md={6}>
-                <Image src={product.image} alt={product.name} fluid />
-            </Col>
-            <Col md={3}>
-                <ListGroup variant="flush">
-                    <ListGroup.Item>
-                        <h3>{product.name}</h3>
-                    </ListGroup.Item>
-                    <ListGroup.Item>
-                        <Rating value={product.rating} text={`${product.numReviews} reviews`}/>
-                    </ListGroup.Item>
-                    <ListGroup.Item>
-                        Price : ₹{product.price}
-                    </ListGroup.Item>
-                    <ListGroup.Item>
-                        Desc : {product.description}
-                    </ListGroup.Item>
-                </ListGroup>
-            </Col>
-            <Col md={3}>
-                <Card>
-                <ListGroup variant="flush">
-                <ListGroup.Item>
-                    <Row>
-                        <Col>Price :</Col>
-                        <Col>
-                            <strong>₹{product.price}</strong>
-                        </Col>
-                    </Row>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                    <Row>
-                        <Col>Status :</Col>
-                        <Col>
-                            <strong>{product.countInStock > 0 ? 'In Stock' : 'Out of Stock'}</strong>
-                        </Col>
-                    </Row>
-                </ListGroup.Item>
-                { product.countInStock > 0 && (
-                    <ListGroup.Item>
-                        <Row>
-                            <Col>
-                                <Form.Control
-                                as='select'
-                                value={qty}
-                                onChange={(e) => setQty(Number(e.target.value))}>
-                                {[...Array(product.countInStock).keys()].map((x) => (
-                                                            <option key={x + 1} value={x + 1}>
-                                                                {x + 1}
-                                                            </option>
-                                                        ))}
-                                </Form.Control>
-                            </Col>
-                        </Row>
-                    </ListGroup.Item>
-                )}
-                <ListGroup.Item>
-                    <Button className="btn-block" type="button" disabled={ product.countInStock === 0 } onClick={addToCartHandler}>
-                        Add to Cart
-                    </Button>
-                </ListGroup.Item>
-                </ListGroup>
-                </Card>
-            </Col>
-            </Row>
-            <Row className="review">
-                <Col md={6}>
-                    <h2>Reviews</h2>
-                    { product.reviews.length === 0 && <Message>No Reviews</Message>}
-                    <ListGroup variant="flush">
-                        { product.reviews.map((review) => (
-                            <ListGroup.Item key={review._id}>
-                                <strong>{review.name}</strong>
-                                <Rating value={review.rating}/>
-                                <p>{review.createdAt.substring(0,10)}</p>
-                                <p>{review.comment}</p>
-                            </ListGroup.Item>
-                        ))}
-                        <ListGroup.Item>
-                            <h2>Write a customer review</h2>
-                            { loadingProductReview && <Loader/>}
-                            { userInfo ? (
-                                <Form onSubmit={submitHandler}>
-                                    <Form.Group className="my-2" controlId="rating">
-                                        <Form.Label>Rating</Form.Label>
-                                        <Form.Control
-                                        as='select'
-                                        value={rating}
-                                        onChange={(e) => setRating(Number(e.target.value))}>
-                                        <option value=''>Select...</option>
-                                        <option value='1'>1 - Poor</option>
-                                        <option value='2'>2 - Fair</option>
-                                        <option value='3'>3 - Good</option>
-                                        <option value='4'>4 - VeryGood</option>
-                                        <option value='5'>5 - Excellent</option>
-                                        </Form.Control>
-                                    </Form.Group>
-                                    <Form.Group className="my-2" controlId="comment">
-                                    <Form.Label>Rating</Form.Label>
-                                        <Form.Control
-                                        as='textarea'
-                                        row='3'
-                                        value={comment}
-                                        onChange={(e) => setComment(e.target.value)}>
-                                        </Form.Control>
-                                    </Form.Group>
-                                    <Button disabled={loadingProductReview}
-                                            type="submit"
-                                            variant="primary">
-                                            Submit
-                                    </Button>
-                                </Form>
-                            ) : (
-                                <Message>
-                                    Please <Link to='/login'>sign in</Link> to write a review
-                                </Message>
-                            ) }
-                        </ListGroup.Item>
-                    </ListGroup>
-                </Col>
-            </Row>
-        </>
-    )}
-    
-    </>
-  )
+{
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "proxy": "http://localhost:8000",
+  "dependencies": {
+    "@paypal/react-paypal-js": "^8.7.0",
+    "@reduxjs/toolkit": "^2.3.0",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.7.7",
+    "bootstrap": "^5.3.3",
+    "pkart": "file:..",
+    "react": "^18.3.1",
+    "react-bootstrap": "^2.10.5",
+    "react-dom": "^18.3.1",
+    "react-helmet-async": "^2.0.5",
+    "react-icons": "^5.3.0",
+    "react-redux": "^9.1.2",
+    "react-router-bootstrap": "^0.26.3",
+    "react-router-dom": "^6.27.0",
+    "react-scripts": "5.0.1",
+    "react-toastify": "^10.0.6",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
 }
 
-export default ProductScreen
 
-Unexpected Application Error!
-You may be attempting to nest <Helmet> components within each other, which is not allowed. Refer to our API for more information.
-Invariant Violation: You may be attempting to nest <Helmet> components within each other, which is not allowed. Refer to our API for more information.
-    at invariant (http://localhost:3000/static/js/bundle.js:26885:15)
-    at Helmet.warnOnInvalidChildren (http://localhost:3000/static/js/bundle.js:59801:53)
-    at http://localhost:3000/static/js/bundle.js:59825:14
-    at http://localhost:3000/static/js/bundle.js:67930:21
-    at http://localhost:3000/static/js/bundle.js:67894:21
-    at mapIntoArray (http://localhost:3000/static/js/bundle.js:67797:27)
-    at mapIntoArray (http://localhost:3000/static/js/bundle.js:67842:27)
-    at mapChildren (http://localhost:3000/static/js/bundle.js:67893:7)
-    at Object.forEachChildren [as forEach] (http://localhost:3000/static/js/bundle.js:67929:7)
-    at Helmet.mapChildrenToProps (http://localhost:3000/static/js/bundle.js:59807:59)
-💿 Hey developer 👋
 
-You can provide a way better UX than this when your app throws errors by providing your own ErrorBoundary or errorElement prop on your route.
+==> Cloning from https://github.com/aljog786/pkart
+==> Checking out commit b5228da4f3edbba057990325a117bbe86c5d36f2 in branch main
+==> Using Node.js version 20.15.1 (default)
+==> Docs on specifying a Node.js version: https://render.com/docs/node-version
+==> Using Bun version 1.1.0 (default)
+==> Docs on specifying a bun version: https://render.com/docs/bun-version
+==> Running build command 'npm run build'...
+npm error Missing script: "build"
+npm error
+npm error To see a list of scripts, run:
+npm error   npm run
+npm error A complete log of this run can be found in: /opt/render/.cache/_logs/2024-10-29T08_49_33_360Z-debug-0.log
+==> Build failed 😞
+==> Common ways to troubleshoot your deploy: https://docs.render.com/troubleshooting-deploys
 
-how to solve thi error
+how to solve this error
