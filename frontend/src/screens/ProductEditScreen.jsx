@@ -18,7 +18,7 @@ const ProductEditScreen = () => {
     const [ brand,setBrand ] = useState('');
     const [ category,setCategory ] = useState('');
     const [ description,setDescription ] = useState('');
-    const [ countInStock,setCountInStock ] = useState('');
+    const [ countInStock,setCountInStock ] = useState(0);
     
     const { data:product,refetch,isLoading,error } = useGetProductDetailsQuery(productId);
 
@@ -57,6 +57,7 @@ const ProductEditScreen = () => {
            toast.error(result.error); 
         } else {
             toast.success('Product updated');
+            refetch();
             navigate('/admin/productlist')
         }
     }
