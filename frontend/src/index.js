@@ -5,7 +5,6 @@ import {
   createRoutesFromElements,
   Route,
   RouterProvider
-
 } from 'react-router-dom';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 import { HelmetProvider } from 'react-helmet-async';

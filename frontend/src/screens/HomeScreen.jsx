@@ -11,34 +11,48 @@ const HomeScreen = () => {
   const { pageNumber,keyword } = useParams();
   const { data,isLoading,error } = useGetProductsQuery({keyword,pageNumber});
   return (
-   <>
-   { !keyword ? (
     <>
-    <h1>Top Rated</h1>
-    <ProductCarousel/>
-    </>
-   ) : (
-    <Link to='/' className="btn btn-light mb-4">
-      Back
-     </Link>
-   )}
-    {isLoading ? (
-      <Loader/>
-    ) : error ? (<Message variant='danger'>{error?.data?.message || error.error}</Message>) :
-    (<>
-        <h1>Latest Products</h1>
-        <Row>
-            {data.products.map((product) => (
+      {!keyword ? (
+        <>
+          <h1>Top Rated</h1>
+          <ProductCarousel />
+        </>
+      ) : (
+        <Link to="/" className="btn btn-light mb-4">
+          Back
+        </Link>
+      )}
+      {isLoading ? (
+        <Loader />
+      ) : error ? (
+        <Message variant="danger">
+          {error?.data?.message || error.error}
+        </Message>
+      ) : (
+        <>
+          <h1>Latest Products</h1>
+          <Row>
+            {Array.isArray(data?.products) ? (
+              data.products.map((product) => (
                 <Col key={product._id} sm={12} md={6} lg={4} xl={3}>
-                    <Product product={product}/>
+                  <Product product={product} />
                 </Col>
-            ))}
-        </Row>
-        <Paginate page={data.page} pages={data.pages} keyword={keyword ? keyword : ''}/>
+              ))
+            ) : (
+              <Message variant="danger">Invalid product data format</Message>
+            )}
+          </Row>
+          {data?.page && data?.pages && (
+            <Paginate
+              page={data.page}
+              pages={data.pages}
+              keyword={keyword ? keyword : ""}
+            />
+          )}
+        </>
+      )}
     </>
-    )}
-   </>
-  )
+  );
 }
 
 export default HomeScreen;

@@ -1,5 +1,5 @@
 import {  useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Form, Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { useCreateProductMutation, useUploadProductImageMutation } from '../slices/productsApiSlice';
@@ -50,7 +50,7 @@ const CreateProductScreen = () => {
         formData.append('image', e.target.files[0]);
         try {
             const res = await uploadProductImage(formData).unwrap();
-            toast.success('Image added');
+            toast.success('Image attached');
             setImage(res.image);
         } catch (err) {
             toast.error(err?.data?.message || err.message);

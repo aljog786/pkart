@@ -1,4 +1,3 @@
-// pkart\frontend\src\screens\ProfileScreen.jsx
 
 import { useEffect,useState } from 'react';
 import { useDispatch,useSelector } from 'react-redux';
